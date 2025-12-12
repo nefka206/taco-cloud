@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Your Tacos - Taco Cloud</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .order-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .taco-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .taco-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .tacos-list {
+            margin-bottom: 20px;
+        }
+
+        .taco-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .taco-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .design-another {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .design-another:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, #ff7979, #ff3838);
+        }
+
+        .empty-tacos {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .empty-tacos .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .validationError {
+            color: #ff6b6b;
+            font-size: 0.875em;
+            display: block;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .order-container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .taco-image {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="order-container">
+        <div class="header">
+            <div class="taco-image">
+                <img th:src="@{/images/TacoCloud.png}" alt="Taco Cloud" />
+            </div>
+            <h1>Order Your Taco Creations!</h1>
+        </div>
+
+        <form method="POST" th:action="@{/orders}" th:object="${tacoOrder}">
+            <!-- Секция с такос в заказе -->
+            <div class="section">
+                <h2>🎉 Your Taco Masterpieces</h2>
+                
+                <div class="tacos-list" th:if="${tacoOrder.tacos != null and !tacoOrder.tacos.empty}">
+                    <div class="taco-item" th:each="taco : ${tacoOrder.tacos}">
+                        <span class="taco-name" th:text="${taco.name}">taco name</span>
+                        <span>🌮</span>
+                    </div>
+                </div>
+                
+                <div class="empty-tacos" th:unless="${tacoOrder.tacos != null and !tacoOrder.tacos.empty}">
+                    <div class="icon">🌮</div>
+                    <p>No tacos in your order yet</p>
+                </div>
+                
+                <a th:href="@{/design}" class="design-another">Design Another Taco ➕</a>
+            </div>
+
+            <!-- Секция доставки -->
+            <div class="section">
+                <h3>🚚 Deliver My Taco Masterpieces To...</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="deliveryName">Name:</label>
+                        <input type="text" th:field="*{deliveryName}" id="deliveryName" placeholder="Your full name"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('deliveryName')}"
+                              th:errors="*{deliveryName}">Name Error</span>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="deliveryStreet">Street Address:</label>
+                        <input type="text" th:field="*{deliveryStreet}" id="deliveryStreet" placeholder="123 Taco Street"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('deliveryStreet')}"
+                              th:errors="*{deliveryStreet}">Street Error</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deliveryCity">City:</label>
+                        <input type="text" th:field="*{deliveryCity}" id="deliveryCity" placeholder="Taco City"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('deliveryCity')}"
+                              th:errors="*{deliveryCity}">City Error</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deliveryState">State:</label>
+                        <input type="text" th:field="*{deliveryState}" id="deliveryState" placeholder="TS"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('deliveryState')}"
+                              th:errors="*{deliveryState}">State Error</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deliveryZip">Zip Code:</label>
+                        <input type="text" th:field="*{deliveryZip}" id="deliveryZip" placeholder="12345"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('deliveryZip')}"
+                              th:errors="*{deliveryZip}">Zip Code Error</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция оплаты -->
+            <div class="section">
+                <h3>💳 Here's How I'll Pay...</h3>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="ccNumber">Credit Card #:</label>
+                        <input type="text" th:field="*{ccNumber}" id="ccNumber" placeholder="1234 5678 9012 3456"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('ccNumber')}"
+                              th:errors="*{ccNumber}">Credit Card Error</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ccExpiration">Expiration:</label>
+                        <input type="text" th:field="*{ccExpiration}" id="ccExpiration" placeholder="MM/YY"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('ccExpiration')}"
+                              th:errors="*{ccExpiration}">Expiration Error</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ccCVV">CVV:</label>
+                        <input type="text" th:field="*{ccCVV}" id="ccCVV" placeholder="123"/>
+                        <span class="validationError"
+                              th:if="${#fields.hasErrors('ccCVV')}"
+                              th:errors="*{ccCVV}">CVV Error</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопка отправки -->
+            <div class="submit-section">
+                <button type="submit" class="submit-button">Submit Order 🚀</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
